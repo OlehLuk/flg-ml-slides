@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Init and Normalization</title>
+  <title>Regularization</title>
   <link rel="stylesheet" href="../../themes/eclipse.css" />
   <style>
     body {
@@ -44,11 +44,10 @@
       transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
     }
 
-    .grid {
+    .grid-3 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
-      margin-bottom: 1.5rem;
       opacity: 0;
       transform: translateY(14px);
       transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
@@ -61,56 +60,49 @@
       padding: 1.75rem 2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.9rem;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      background: var(--theme-accent-subtle);
+      border: 1px solid rgba(99,102,241,0.2);
     }
 
     .card h3 {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--theme-color);
       letter-spacing: -0.02em;
     }
 
-    .card ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    .card li {
-      font-size: 1rem;
-      color: var(--theme-color-secondary);
-      line-height: 1.55;
-      display: flex;
-      gap: 0.6rem;
-    }
-
-    .card li::before {
-      content: '→';
-      color: var(--theme-accent);
-      flex-shrink: 0;
-    }
-
-    .note {
-      padding: 1.1rem 1.4rem;
-      border-left: 3px solid var(--theme-accent);
-      background: var(--theme-accent-subtle);
-      border-radius: 0 12px 12px 0;
+    .card p {
       font-size: 1rem;
       color: var(--theme-color-secondary);
       line-height: 1.6;
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
+      margin: 0;
+    }
+
+    .formula {
+      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      background: white;
+      border: 1px solid var(--theme-border);
+      color: var(--theme-color);
     }
 
     .visible .label,
     .visible h2,
-    .visible .grid,
-    .visible .note {
+    .visible .grid-3 {
       opacity: 1;
       transform: translateY(0);
     }
@@ -121,27 +113,26 @@
   <div class="grid-lines"></div>
 
   <div class="content">
-    <div class="label">15 · Initialization &amp; Normalization</div>
-    <h2>Some problems start before the first gradient step</h2>
-    <div class="grid">
+    <div class="label">14 · Regularization</div>
+    <h2>Regularization shapes the optimization path</h2>
+    <div class="grid-3">
       <div class="card">
-        <h3>Weight initialization</h3>
-        <ul>
-          <li><strong>Xavier / Glorot</strong> — balanced variance for sigmoid/tanh activations</li>
-          <li><strong>He initialization</strong> — corrected scale for ReLU networks</li>
-          <li>Bad initialization causes vanishing or exploding gradients from the very first forward pass</li>
-        </ul>
+        <div class="card-icon">⚖️</div>
+        <h3>L2 / Weight decay</h3>
+        <p>Penalizes large weights. Shrinks parameters toward zero each step, which changes the effective loss surface that the optimizer navigates.</p>
+        <div class="formula">L<sub>total</sub> = L + λ ‖θ‖<sup>2</sup></div>
       </div>
       <div class="card">
-        <h3>Normalization layers</h3>
-        <ul>
-          <li><strong>BatchNorm</strong> — normalizes activations across the minibatch at each layer</li>
-          <li><strong>LayerNorm</strong> — normalizes across features; standard in transformers</li>
-          <li>Both smooth the loss landscape and allow larger, more stable learning rates</li>
-        </ul>
+        <div class="card-icon">🎲</div>
+        <h3>Dropout</h3>
+        <p>Randomly zeros activations during training. Injects noise into the optimization trajectory, which can lead to more robust minima.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛑</div>
+        <h3>Early stopping</h3>
+        <p>Halt training when validation loss stops improving. The optimizer never reaches the training minimum — and that is intentional.</p>
       </div>
     </div>
-    <div class="note">Good initialization and normalization do not replace a well-tuned optimizer — but they can make the optimizer's job dramatically easier from step one.</div>
   </div>
 
   <script>

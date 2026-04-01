@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Second-Order Methods</title>
+  <title>Summary and Discussion</title>
   <link rel="stylesheet" href="../../themes/eclipse.css" />
   <style>
     body {
@@ -32,13 +32,14 @@
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    h2 {
-      font-size: 2.75rem;
+    .headline {
+      font-size: 2.25rem;
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.1;
-      color: var(--theme-color);
-      margin-bottom: 2.25rem;
+      color: var(--theme-accent);
+      margin-bottom: 2rem;
+      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
       opacity: 0;
       transform: translateY(14px);
       transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
@@ -48,7 +49,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
       opacity: 0;
       transform: translateY(14px);
       transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
@@ -61,7 +62,7 @@
       padding: 1.75rem 2rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .card h3 {
@@ -71,47 +72,13 @@
       letter-spacing: -0.02em;
     }
 
-    .card p {
-      font-size: 1rem;
-      color: var(--theme-color-secondary);
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .comparison-bar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-
-    .cmp {
-      padding: 0.85rem 1rem;
-      background: white;
-      border: 1px solid var(--theme-border);
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    .cmp strong {
-      display: block;
-      font-size: 1rem;
-      color: var(--theme-color);
-      margin-bottom: 3px;
-    }
-
-    .cmp span {
-      font-size: 0.9rem;
-      color: var(--theme-color-muted);
-      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
-    }
-
     .card ul {
       list-style: none;
       padding: 0;
       margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 0.6rem;
     }
 
     .card li {
@@ -128,23 +95,44 @@
       flex-shrink: 0;
     }
 
-    .note {
-      padding: 1.1rem 1.4rem;
-      border-left: 3px solid var(--theme-accent);
-      background: var(--theme-accent-subtle);
-      border-radius: 0 12px 12px 0;
-      font-size: 1rem;
-      color: var(--theme-color-secondary);
-      line-height: 1.6;
+    .questions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(14px);
       transition: opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
     }
 
+    .q-card {
+      background: var(--theme-accent-subtle);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 18px;
+      padding: 1.5rem 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .q-num {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--theme-accent);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .q-card p {
+      font-size: 0.97rem;
+      color: var(--theme-color-secondary);
+      line-height: 1.55;
+      margin: 0;
+    }
+
     .visible .label,
-    .visible h2,
+    .visible .headline,
     .visible .grid,
-    .visible .note {
+    .visible .questions {
       opacity: 1;
       transform: translateY(0);
     }
@@ -155,34 +143,43 @@
   <div class="grid-lines"></div>
 
   <div class="content">
-    <div class="label">17 · Second-Order Methods</div>
-    <h2>Beyond gradients: Newton's method &amp; L-BFGS</h2>
+    <div class="label">Summary &amp; Discussion</div>
+    <div class="headline">GD → SGD → Momentum → RMSProp / Adam</div>
     <div class="grid">
       <div class="card">
-        <h3>Core idea</h3>
-        <p>Second-order methods use curvature information (the Hessian ∇<sup>2</sup>L) in addition to gradients, allowing more informed step directions and sizes.</p>
-        <div class="comparison-bar">
-          <div class="cmp">
-            <strong>First-order</strong>
-            <span>uses ∇L only</span>
-          </div>
-          <div class="cmp">
-            <strong>Second-order</strong>
-            <span>uses ∇L + ∇<sup>2</sup>L</span>
-          </div>
-        </div>
+        <h3>The conceptual arc</h3>
+        <ul>
+          <li>Gradient gives a direction to move</li>
+          <li>SGD makes training scalable via minibatches</li>
+          <li>Momentum stabilizes and accelerates updates</li>
+          <li>Adaptive methods rescale steps per parameter</li>
+          <li>Learning rate is the most impactful knob</li>
+        </ul>
       </div>
       <div class="card">
-        <h3>Why not the default in deep learning?</h3>
+        <h3>The bigger picture</h3>
         <ul>
-          <li>Computing the full Hessian is O(n<sup>2</sup>) — prohibitive for millions of parameters</li>
-          <li>L-BFGS approximates it, but still costly in memory and compute</li>
-          <li>Minibatch noise makes curvature estimates unreliable</li>
-          <li>First-order methods scale much better to modern network sizes</li>
+          <li>Optimization speed does not equal generalization quality</li>
+          <li>Regularization, init, and normalization all shape training</li>
+          <li>Sharp vs flat minima matter for test performance</li>
+          <li>Debugging training is a core ML engineering skill</li>
         </ul>
       </div>
     </div>
-    <div class="note">Second-order methods can be powerful for smaller models and full-batch settings — they see use in scientific computing and classic ML — but first-order methods dominate deep learning.</div>
+    <div class="questions">
+      <div class="q-card">
+        <div class="q-num">1</div>
+        <p>Why can SGD outperform Adam on test accuracy even if Adam reaches lower training loss faster?</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num">2</div>
+        <p>Why is the learning rate often more important than the choice of optimizer?</p>
+      </div>
+      <div class="q-card">
+        <div class="q-num">3</div>
+        <p>When would you prefer an adaptive optimizer over SGD with momentum?</p>
+      </div>
+    </div>
   </div>
 
   <script>

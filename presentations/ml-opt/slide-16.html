@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Regularization</title>
+  <title>Generalization</title>
   <link rel="stylesheet" href="../../themes/eclipse.css" />
   <style>
     body {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 5rem;
+      padding: 4rem 5rem;
     }
 
     .content {
@@ -33,10 +33,10 @@
     }
 
     h2 {
-      font-size: 2.75rem;
+      font-size: 2.5rem;
       font-weight: 800;
       letter-spacing: -0.03em;
-      line-height: 1.1;
+      line-height: 1.15;
       color: var(--theme-color);
       margin-bottom: 2.25rem;
       opacity: 0;
@@ -44,13 +44,35 @@
       transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
     }
 
-    .grid-3 {
+    .layout {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
+      margin-bottom: 1.5rem;
       opacity: 0;
       transform: translateY(14px);
       transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+    }
+
+    .cards-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .img-card {
+      background: var(--theme-surface);
+      border: 1px solid var(--theme-border);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .img-card img {
+      width: 100%;
+      display: block;
+      object-fit: contain;
     }
 
     .card {
@@ -60,23 +82,11 @@
       padding: 1.75rem 2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .card-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.35rem;
-      background: var(--theme-accent-subtle);
-      border: 1px solid rgba(99,102,241,0.2);
+      gap: 1rem;
     }
 
     .card h3 {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--theme-color);
       letter-spacing: -0.02em;
@@ -89,20 +99,54 @@
       margin: 0;
     }
 
-    .formula {
-      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
-      font-size: 0.95rem;
-      line-height: 1.8;
-      padding: 0.6rem 0.9rem;
-      border-radius: 10px;
-      background: white;
-      border: 1px solid var(--theme-border);
-      color: var(--theme-color);
+    .distinction {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
     }
+
+    .dist-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .dist-row.opt { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); }
+    .dist-row.gen { background: rgba(79,70,229,0.08); border: 1px solid rgba(79,70,229,0.2); }
+
+    .dist-label {
+      font-weight: 700;
+      color: var(--theme-color);
+      flex-shrink: 0;
+      min-width: 120px;
+    }
+
+    .dist-desc { color: var(--theme-color-secondary); }
+
+    .quote-block {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--theme-color);
+      line-height: 1.45;
+      padding: 1.4rem 1.75rem;
+      background: var(--theme-accent-subtle);
+      border-radius: 16px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
+    }
+
+    .accent { color: var(--theme-accent); }
+    .accent-alt { color: var(--theme-accent-alt); }
 
     .visible .label,
     .visible h2,
-    .visible .grid-3 {
+    .visible .layout,
+    .visible .quote-block {
       opacity: 1;
       transform: translateY(0);
     }
@@ -113,25 +157,37 @@
   <div class="grid-lines"></div>
 
   <div class="content">
-    <div class="label">14 · Regularization</div>
-    <h2>Regularization shapes the optimization path</h2>
-    <div class="grid-3">
-      <div class="card">
-        <div class="card-icon">⚖️</div>
-        <h3>L2 / Weight decay</h3>
-        <p>Penalizes large weights. Shrinks parameters toward zero each step, which changes the effective loss surface that the optimizer navigates.</p>
-        <div class="formula">L<sub>total</sub> = L + λ ‖θ‖<sup>2</sup></div>
+    <div class="label">13 · Optimization vs Generalization</div>
+    <h2>Lower training loss does not automatically mean better test performance</h2>
+    <div class="layout">
+      <div class="cards-col">
+        <div class="card">
+          <h3>The key distinction</h3>
+          <div class="distinction">
+            <div class="dist-row opt">
+              <span class="dist-label">Optimization</span>
+              <span class="dist-desc">Minimize the training objective</span>
+            </div>
+            <div class="dist-row gen">
+              <span class="dist-label">Generalization</span>
+              <span class="dist-desc">Perform well on unseen data</span>
+            </div>
+          </div>
+          <p>These are connected, but they are not the same problem. A model that perfectly minimizes training loss may generalize poorly.</p>
+        </div>
+        <div class="card">
+          <h3>Flat vs sharp minima</h3>
+          <p>Flat minima are wide basins in the loss landscape. Small perturbations to parameters cause little change in loss — the model is more robust.</p>
+          <p>Sharp minima are narrow. They fit training data well but tiny shifts in parameters can cause large increases in loss — and poor generalization.</p>
+          <p>SGD noise naturally biases training toward flatter, more generalizable solutions.</p>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-icon">🎲</div>
-        <h3>Dropout</h3>
-        <p>Randomly zeros activations during training. Injects noise into the optimization trajectory, which can lead to more robust minima.</p>
+      <div class="img-card">
+        <img src="stable_vs_sharp_with_test_points.png" alt="Flat (stable) vs sharp minimum with test points illustrating generalization difference"/>
       </div>
-      <div class="card">
-        <div class="card-icon">🛑</div>
-        <h3>Early stopping</h3>
-        <p>Halt training when validation loss stops improving. The optimizer never reaches the training minimum — and that is intentional.</p>
-      </div>
+    </div>
+    <div class="quote-block">
+      Optimization is about <span class="accent">getting low loss</span>. Machine learning is about <span class="accent-alt">getting low loss on new data</span>.
     </div>
   </div>
 

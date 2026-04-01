@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generalization</title>
+  <title>LR Schedules — Cyclic</title>
   <link rel="stylesheet" href="../../themes/eclipse.css" />
   <style>
     body {
@@ -33,18 +33,18 @@
     }
 
     h2 {
-      font-size: 2.5rem;
+      font-size: 2.75rem;
       font-weight: 800;
       letter-spacing: -0.03em;
-      line-height: 1.15;
+      line-height: 1.1;
       color: var(--theme-color);
-      margin-bottom: 2.25rem;
+      margin-bottom: 1.75rem;
       opacity: 0;
       transform: translateY(14px);
       transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
     }
 
-    .layout {
+    .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
@@ -99,54 +99,61 @@
       margin: 0;
     }
 
-    .distinction {
+    .formula {
+      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+      font-size: 1rem;
+      line-height: 1.8;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      background: white;
+      border: 1px solid var(--theme-border);
+      color: var(--theme-color);
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
     }
 
-    .dist-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
+    .card li {
       font-size: 1rem;
+      color: var(--theme-color-secondary);
+      line-height: 1.55;
+      display: flex;
+      gap: 0.6rem;
     }
 
-    .dist-row.opt { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); }
-    .dist-row.gen { background: rgba(79,70,229,0.08); border: 1px solid rgba(79,70,229,0.2); }
-
-    .dist-label {
-      font-weight: 700;
-      color: var(--theme-color);
+    .card li::before {
+      content: '→';
+      color: var(--theme-accent);
       flex-shrink: 0;
-      min-width: 120px;
     }
 
-    .dist-desc { color: var(--theme-color-secondary); }
+    .card li strong { color: var(--theme-color); }
 
-    .quote-block {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--theme-color);
-      line-height: 1.45;
-      padding: 1.4rem 1.75rem;
+    .note {
+      padding: 1.1rem 1.4rem;
+      border-left: 3px solid var(--theme-accent);
       background: var(--theme-accent-subtle);
-      border-radius: 16px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 0 12px 12px 0;
+      font-size: 1rem;
+      color: var(--theme-color-secondary);
+      line-height: 1.6;
       opacity: 0;
       transform: translateY(12px);
       transition: opacity 0.5s ease 0.35s, transform 0.5s ease 0.35s;
     }
 
-    .accent { color: var(--theme-accent); }
-    .accent-alt { color: var(--theme-accent-alt); }
+    .note strong { color: var(--theme-color); }
 
     .visible .label,
     .visible h2,
-    .visible .layout,
-    .visible .quote-block {
+    .visible .grid,
+    .visible .note {
       opacity: 1;
       transform: translateY(0);
     }
@@ -157,37 +164,35 @@
   <div class="grid-lines"></div>
 
   <div class="content">
-    <div class="label">13 · Optimization vs Generalization</div>
-    <h2>Lower training loss does not automatically mean better test performance</h2>
-    <div class="layout">
+    <div class="label">13 · LR Schedules — Cyclic</div>
+    <h2>Cyclic schedules and practical recommendations</h2>
+
+    <div class="grid">
       <div class="cards-col">
         <div class="card">
-          <h3>The key distinction</h3>
-          <div class="distinction">
-            <div class="dist-row opt">
-              <span class="dist-label">Optimization</span>
-              <span class="dist-desc">Minimize the training objective</span>
-            </div>
-            <div class="dist-row gen">
-              <span class="dist-label">Generalization</span>
-              <span class="dist-desc">Perform well on unseen data</span>
-            </div>
-          </div>
-          <p>These are connected, but they are not the same problem. A model that perfectly minimizes training loss may generalize poorly.</p>
+          <h3>Cyclic Learning Rate (CLR)</h3>
+          <p>Oscillate the learning rate between η<sub>min</sub> and η<sub>max</sub> on a fixed cycle. Helps escape local minima and saddle points during training.</p>
+          <div class="formula">η<sub>t</sub> = η<sub>min</sub> + (η<sub>max</sub> − η<sub>min</sub>) · tri(t / 2s)</div>
+          <p style="font-size:0.9rem">where <code>tri</code> is a triangular wave and s is the step size (half-cycle length).</p>
         </div>
         <div class="card">
-          <h3>Flat vs sharp minima</h3>
-          <p>Flat minima are wide basins in the loss landscape. Small perturbations to parameters cause little change in loss — the model is more robust.</p>
-          <p>Sharp minima are narrow. They fit training data well but tiny shifts in parameters can cause large increases in loss — and poor generalization.</p>
-          <p>SGD noise naturally biases training toward flatter, more generalizable solutions.</p>
+          <h3>1cycle policy (Leslie Smith)</h3>
+          <p>A single cycle: ramp the LR up from η<sub>min</sub> to η<sub>max</sub>, then decay back — often finishing below η<sub>min</sub>. Momentum is cycled inversely.</p>
+          <ul>
+            <li>Achieves strong results in far fewer epochs</li>
+            <li>Acts as implicit regularization</li>
+            <li>Works well with large batch sizes</li>
+            <li>Default in fast.ai; competitive on vision benchmarks</li>
+          </ul>
         </div>
       </div>
       <div class="img-card">
-        <img src="stable_vs_sharp_with_test_points.png" alt="Flat (stable) vs sharp minimum with test points illustrating generalization difference"/>
+        <img src="loss_lr.png" alt="Loss vs learning rate curve showing the relationship between LR and training loss"/>
       </div>
     </div>
-    <div class="quote-block">
-      Optimization is about <span class="accent">getting low loss</span>. Machine learning is about <span class="accent-alt">getting low loss on new data</span>.
+
+    <div class="note">
+      <strong>Practical defaults:</strong> cosine annealing is a safe choice for most tasks; add warmup when training transformers or with large batches; try 1cycle when training time is limited and you want strong baselines quickly.
     </div>
   </div>
 
