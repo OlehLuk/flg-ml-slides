@@ -17,6 +17,7 @@
     { "file": "slide-08.html", "title": "AdaGrad", "transition": "fade" },
     { "file": "slide-09.html", "title": "RMSProp", "transition": "fade" },
     { "file": "slide-10.html", "title": "Adam", "transition": "fade" },
+    { "file": "slide-adamw.html", "title": "AdamW", "transition": "fade" },
     { "file": "slide-11.html", "title": "Optimizer Evolution", "transition": "fade" },
     { "file": "slide-12.html", "title": "Learning Rate", "transition": "fade" },
     { "file": "slide-13.html", "title": "LR Schedules: Monotonic", "transition": "fade" },

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adam</title>
+  <title>AdamW</title>
   <link rel="stylesheet" href="../../themes/eclipse.css" />
   <style>
     body {
@@ -71,30 +71,6 @@
       letter-spacing: -0.02em;
     }
 
-    .pill-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      padding: 0.85rem 1rem;
-      background: white;
-      border: 1px solid var(--theme-border);
-      border-radius: 12px;
-    }
-
-    .pill {
-      padding: 5px 14px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .pill.momentum { background: rgba(99,102,241,0.12); color: var(--theme-accent); border: 1px solid rgba(99,102,241,0.3); }
-    .pill.rms { background: rgba(79,70,229,0.12); color: var(--theme-accent-alt); border: 1px solid rgba(79,70,229,0.3); }
-    .op { font-size: 1.2rem; color: var(--theme-color-muted); font-weight: 700; }
-    .eq { font-size: 1rem; color: var(--theme-accent); font-weight: 800; }
-    .result { font-size: 1rem; font-weight: 800; color: var(--theme-color); }
-
     .formulas {
       display: flex;
       flex-direction: column;
@@ -110,6 +86,59 @@
       background: white;
       border: 1px solid var(--theme-border);
       color: var(--theme-color);
+    }
+
+    .formula.highlight {
+      border-color: rgba(99,102,241,0.4);
+      background: rgba(99,102,241,0.05);
+    }
+
+    .diff-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .diff-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      align-items: start;
+    }
+
+    .diff-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+      margin-top: 0.1rem;
+    }
+
+    .diff-badge.adam { background: rgba(99,102,241,0.1); color: var(--theme-accent); border: 1px solid rgba(99,102,241,0.25); }
+    .diff-badge.adamw { background: rgba(16,163,127,0.1); color: #0d9488; border: 1px solid rgba(16,163,127,0.3); }
+
+    .diff-text {
+      font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      padding: 0.55rem 0.9rem;
+      border-radius: 10px;
+      background: white;
+      border: 1px solid var(--theme-border);
+      color: var(--theme-color);
+    }
+
+    .diff-text .strike {
+      text-decoration: line-through;
+      color: var(--theme-color-muted);
+    }
+
+    .diff-text .added {
+      color: #0d9488;
+      font-weight: 700;
     }
 
     .pros-cons { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -163,7 +192,7 @@
     }
 
     .accent { color: var(--theme-accent); }
-    .accent-alt { color: var(--theme-accent-alt); }
+    .accent-green { color: #0d9488; }
 
     .visible .label,
     .visible h2,
@@ -173,21 +202,14 @@
       transform: translateY(0);
     }
 
-    /* Ensure subscript and superscript are properly aligned */
     sub, sup {
       font-size: 75%;
       line-height: 0;
       position: relative;
       vertical-align: baseline;
     }
-
-    sub {
-      bottom: -0.25em;
-    }
-
-    sup {
-      top: -0.5em;
-    }
+    sub { bottom: -0.25em; }
+    sup { top: -0.5em; }
   </style>
 </head>
 <body>
@@ -195,41 +217,41 @@
   <div class="grid-lines"></div>
 
   <div class="content">
-    <div class="label">9 · Adam</div>
-    <h2>Adam — Adaptive Moment Estimation</h2>
+    <div class="label">10 · AdamW</div>
+    <h2>AdamW — Decoupled Weight Decay</h2>
     <div class="grid">
       <div class="card">
-        <h3>Algorithm</h3>
-        <div class="pill-row">
-          <div class="pill momentum">Momentum</div>
-          <span class="op">+</span>
-          <div class="pill rms">RMSProp</div>
-          <span class="eq">=</span>
-          <span class="result">Adam</span>
+        <h3>The fix: decouple weight decay from gradients</h3>
+        <div class="diff-block">
+          <div class="diff-row">
+            <div class="diff-badge adam">Adam</div>
+            <div class="diff-text">g̃<sub>t</sub> = g<sub>t</sub> <span class="strike">+ λ θ<sub>t</sub></span> &nbsp;<span style="color:var(--theme-color-muted);font-size:0.82rem">// L2 added to gradient → gets scaled by adaptive rate</span></div>
+          </div>
+          <div class="diff-row">
+            <div class="diff-badge adamw">AdamW</div>
+            <div class="diff-text">θ<sub>t+1</sub> = θ<sub>t</sub> − η · m̂<sub>t</sub> / (√v̂<sub>t</sub> + ε) <span class="added">− η λ θ<sub>t</sub></span> &nbsp;<span style="color:var(--theme-color-muted);font-size:0.82rem">// weight decay applied directly</span></div>
+          </div>
         </div>
         <div class="formulas">
-          <div class="formula">m<sub>t</sub> = β<sub>1</sub> m<sub>t−1</sub> + (1−β<sub>1</sub>) g<sub>t</sub> &nbsp;<span style="color:var(--theme-color-muted);font-size:0.85rem">// 1st moment (mean)</span></div>
-          <div class="formula">v<sub>t</sub> = β<sub>2</sub> v<sub>t−1</sub> + (1−β<sub>2</sub>) g<sub>t</sub><sup>2</sup> &nbsp;<span style="color:var(--theme-color-muted);font-size:0.85rem">// 2nd moment (variance)</span></div>
-          <div class="formula" style="border-color: rgba(99,102,241,0.35); background: rgba(99,102,241,0.04);">m̂<sub>t</sub> = m<sub>t</sub> / (1 − β<sub>1</sub><sup>t</sup>) &nbsp;<span style="color:var(--theme-color-muted);font-size:0.85rem">// bias correction</span></div>
-          <div class="formula" style="border-color: rgba(99,102,241,0.35); background: rgba(99,102,241,0.04);">v̂<sub>t</sub> = v<sub>t</sub> / (1 − β<sub>2</sub><sup>t</sup>) &nbsp;<span style="color:var(--theme-color-muted);font-size:0.85rem">// bias correction</span></div>
-          <div class="formula">θ<sub>t+1</sub> = θ<sub>t</sub> − η · m̂<sub>t</sub> / (√v̂<sub>t</sub> + ε) &nbsp;<span style="color:var(--theme-color-muted);font-size:0.85rem">// parameter update</span></div>
+          <div class="formula">m<sub>t</sub>, v<sub>t</sub>, m̂<sub>t</sub>, v̂<sub>t</sub> &nbsp;— same as Adam</div>
+          <div class="formula highlight">θ<sub>t+1</sub> = (1 − η λ) θ<sub>t</sub> − η · m̂<sub>t</sub> / (√v̂<sub>t</sub> + ε) &nbsp;<span style="color:var(--theme-color-muted);font-size:0.85rem">// λ = weight decay</span></div>
         </div>
       </div>
       <div class="card">
-        <h3>Pros &amp; cons</h3>
+        <h3>Why it matters</h3>
         <div class="pros-cons">
-          <div class="section-label">Pros</div>
-          <div class="pc-row"><span class="pc-icon pro">✓</span>Fast convergence with minimal tuning</div>
-          <div class="pc-row"><span class="pc-icon pro">✓</span>Handles sparse and noisy gradients well</div>
-          <div class="pc-row"><span class="pc-icon pro">✓</span>Bias correction stabilizes early training</div>
-          <div class="section-label" style="margin-top:0.5rem">Cons</div>
-          <div class="pc-row"><span class="pc-icon con">✗</span>Can generalize worse than SGD+momentum on some tasks</div>
-          <div class="pc-row"><span class="pc-icon con">✗</span><span>More memory: stores m<sub>t</sub> and v<sub>t</sub> per parameter</span></div>
+          <div class="section-label">Problem with Adam + L2</div>
+          <div class="pc-row"><span class="pc-icon con">✗</span><span>L2 penalty is added to the gradient, then divided by v̂<sub>t</sub> — the adaptive rate weakens regularization for frequently updated params</span></div>
+          <div class="pc-row"><span class="pc-icon con">✗</span>Weight decay strength varies per parameter — harder to tune λ</div>
+          <div class="section-label" style="margin-top:0.5rem">AdamW fix</div>
+          <div class="pc-row"><span class="pc-icon pro">✓</span>Weight decay is applied uniformly, independent of the gradient magnitude</div>
+          <div class="pc-row"><span class="pc-icon pro">✓</span>Better generalization — especially for Transformers &amp; large models</div>
+          <div class="pc-row"><span class="pc-icon pro">✓</span>Default optimizer in Hugging Face, PyTorch Lightning, and most LLM training</div>
         </div>
       </div>
     </div>
     <div class="quote-block">
-      <span class="accent">Adam gets you moving fast</span>; <span class="accent-alt">SGD + momentum</span> can sometimes win on final test performance — both are worth knowing.
+      <span class="accent">Adam + L2 ≠ weight decay</span> — they only coincide for SGD. <span class="accent-green">AdamW decouples them</span>, making regularization predictable and effective across all parameters.
     </div>
   </div>
 
